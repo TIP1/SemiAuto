@@ -3,6 +3,7 @@ import requests
 import json
 import pytest
 import allure
+import random
 
 from dotenv import load_dotenv
 from conftest import auth_token_fixture, asset_create_fixture
@@ -45,8 +46,8 @@ class TestAuthMethods:
     def test_auth_incorrect_data(self):
 
         payload = {
-            'username': '1234',
-            'password': '1234'
+            'username': f'{random.randint(1,100)}',
+            'password': f'{random.randint(1,100)}'
         }
 
         json_payload = json.dumps(payload)
