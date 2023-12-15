@@ -35,10 +35,10 @@ class TestAuthMethods:
 
         if response.status_code == 200:
             print('\nAuthentication was successful with the correct data.')
-            print('\nGot token: '.__add__(response.json()["token"]))
+            print(f'\nGot token: {response.json()["token"]}')
             assert response.status_code == 200
         else:
-            print('\nGot error:'.__add__(response.status_code))
+            print(f'\nGot error: {response.status_code}')
             assert False
 
     @allure.title('Auth test with incorrect data')
