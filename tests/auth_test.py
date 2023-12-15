@@ -14,11 +14,11 @@ PASSWORD = os.getenv('PASSWORD')
 PROJECT_PATH = '\\'.join(os.path.abspath(__file__).split('\\')[0:-2])
 
 
-@allure.suite('Base methods')
-class TestBasicMethods:
+@allure.suite('Auth methods')
+class TestAuthMethods:
 
-    @allure.title('Auth test')
-    def test_auth(self):
+    @allure.title('Auth test with correct data')
+    def test_auth_correct_data(self):
 
         payload = {
             'username': USERNAME,
@@ -34,68 +34,38 @@ class TestBasicMethods:
         response = requests.post(url=f'{BASE_URL}/api-token-auth/', data=json_payload, headers=headers)
 
         if response.status_code == 200:
-            print('Запрос успешно выполнен')
-            print(response.json()['token'])
+            print('\nАутентификация прошла успешно с правильными данными.')
+            print(f'\nПолучен токен: {response.json()["token"]}')
             assert response.status_code == 200
         else:
-            print('Произошла ошибка:', response.status_code)
+            print('\nПроизошла ошибка:', response.status_code)
             assert False
 
-    @allure.title('Upload test')
-    def test_upload(self, auth_token, asset_create):
+    @allure.title('Auth test with incorrect data')
+    def test_auth_incorrect_data(self):
 
-        query_params = {
-            'upload_id': 1,
-            'check_duplicates': True,
-            'with_meta': False,
-            'override_by_meta': False
+        payload = {
+            'username': '1234',
+            'password': '1234'
         }
 
-        file_names = os.listdir(f'{PROJECT_PATH}\\files')
+        json_payload = json.dumps(payload)
 
-        for file_name in file_names:
-
-            file_path = f'{PROJECT_PATH}\\files\\{file_name}'
-            file_size = os.stat(file_path).st_size  # значение в байтах
-
-            headers = {
-                'Authorization': f'Token {auth_token.auth_method()}',
-            }
-
-            test_files = {
-                "file": open(file_path, 'rb')
-            }
-
-            if file_size / (1024 * 1024) > 5: # значение в мб
-                headers['HTTP_CONTENT_RANGE'] = f'0-{file_size}/{file_size}'
-
-            response = requests.post(url=f'{BASE_URL}/api/v1/content_import/assets/upload/{asset_create["pk"]}',
-                                 params=query_params, headers=headers, files=test_files)
-
-            if response.status_code == 200:
-                print(f'Запрос успешно выполнен. Файл {file_name} загружен.')
-                assert response.status_code == 200
-            else:
-                print(f'Произошла ошибка при загрузке файла {file_name}:', response.status_code)
-                assert False
-
-        query_params_search = {
-            'ordering': 'file',
-            'cursor': '1', #offset
-            'page_size': 10 #limit
+        headers = {
+            'Content-Type': 'application/json',
         }
 
-        # response_search = requests.get(url=f'{BASE_URL}/api/v1/search/assets/',
-        #                        params=query_params_search, headers=headers)
+        response = requests.post(url=f'{BASE_URL}/api-token-auth/', data=json_payload, headers=headers)
 
-        response_search = requests.get(url=f'{BASE_URL}/api/v1/mutual_integration/find_assets/search/',
-                               params=query_params_search, headers=headers)
-
-        if response_search.status_code == 200:
-            print(response.json())
-            assert response.status_code == 200
+        if response.status_code == 400:
+            print('\nАутентификация с неправильнымы данными не прошла')
+            msg = response.json()['non_field_errors'][0]
+            assert msg == 'wrong_username_or_password', f'\nТест провалился: {msg}'
         else:
-            print('Произошла ошибка:', response_search.status_code)
+            if response.status_code == 200:
+                print('\nПрошла Аутентификация с неправильнымы данными')
+                assert False
+            print('\nПроизошла ошибка:', response.status_code)
             assert False
 
 
