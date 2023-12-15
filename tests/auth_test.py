@@ -34,11 +34,11 @@ class TestAuthMethods:
         response = requests.post(url=f'{BASE_URL}/api-token-auth/', data=json_payload, headers=headers)
 
         if response.status_code == 200:
-            print('\nАутентификация прошла успешно с правильными данными.')
-            print(f'\nПолучен токен: {response.json()["token"]}')
+            print('\nAuthentication was successful with the correct data.')
+            print('\nGot token: '.__add__(response.json()["token"]))
             assert response.status_code == 200
         else:
-            print('\nПроизошла ошибка:', response.status_code)
+            print('\nGot error:'.__add__(response.status_code))
             assert False
 
     @allure.title('Auth test with incorrect data')
