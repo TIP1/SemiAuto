@@ -47,10 +47,10 @@ class TestUploadMethods:
                                  params=query_params, headers=headers, files=test_files)
 
             if response.status_code == 200:
-                print(f'\nЗапрос успешно выполнен. Файл {file_name} загружен.')
+                print(f'\nThe request was successfully completed. The {file_name} file has been uploaded.')
                 assert response.status_code == 200
             else:
-                print(f'\nПроизошла ошибка при загрузке файла {file_name}:', response.status_code)
+                print(f'\nAn error occurred while uploading the file {file_name}:', response.status_code)
                 assert False
 
         query_params_search = {
@@ -66,7 +66,7 @@ class TestUploadMethods:
             print(response.json())
             assert response.status_code == 200
         else:
-            print('\nПроизошла ошибка:', response_search.status_code)
+            print('\nAn error has occurred:', response_search.status_code)
             assert False
 
 

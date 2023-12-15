@@ -58,14 +58,14 @@ class TestAuthMethods:
         response = requests.post(url=f'{BASE_URL}/api-token-auth/', data=json_payload, headers=headers)
 
         if response.status_code == 400:
-            print('\nАутентификация с неправильнымы данными не прошла')
+            print('\nAuthentication with incorrect data failed')
             msg = response.json()['non_field_errors'][0]
-            assert msg == 'wrong_username_or_password', f'\nТест провалился: {msg}'
+            assert msg == 'wrong_username_or_password', f'\nThe test failed: {msg}'
         else:
             if response.status_code == 200:
-                print('\nПрошла Аутентификация с неправильнымы данными')
+                print('\nAuthentication with incorrect data was completed')
                 assert False
-            print('\nПроизошла ошибка:', response.status_code)
+            print('\nAn error has occurred:', response.status_code)
             assert False
 
 
